@@ -26,7 +26,6 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
         `https://www.thecocktaildb.com/api/json/v1/${API_KEY}/lookup.php?i=${drinkId}`
       );
       const data = await response.json();
-      console.log('Fetched drink data:', data); // <-- check this
       showModal(data.drinks[0]);
     }
     // close modal
@@ -44,11 +43,29 @@ document.getElementById('searchBtn').addEventListener('click', async () => {
         );
       }
     }
+  
     document.getElementById('modalDetails').innerHTML = `
       <h2>${drink.strDrink}</h2>
       <h3>Ingredients:</h3>
       <ul>${ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
       <p>${drink.strInstructions}</p>
     `;
+  
+    const favButton = document.createElement('button');
+    const isFavorite = localStorage.getItem(drink.idDrink) === 'true';
+  
+    favButton.textContent = isFavorite ? '❤️ Remove Favorite' : 'Add Favorite';
+  
+    favButton.addEventListener('click', () => {
+      if (localStorage.getItem(drink.idDrink) === 'true') {
+        localStorage.removeItem(drink.idDrink);
+        favButton.textContent = 'Add Favorite';
+      } else {
+        localStorage.setItem(drink.idDrink, 'true');
+        favButton.textContent = '❤️ Remove Favorite';
+      }
+    });
+  
+    document.getElementById('modalDetails').append(favButton);
     document.getElementById('modal').style.display = 'block';
   }  
