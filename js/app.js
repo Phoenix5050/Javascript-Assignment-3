@@ -1,21 +1,35 @@
 document.getElementById('searchBtn').addEventListener('click', async () => {
-    const ingredient = document.getElementById('ingredientInput').value;
-    const response = await fetch(
-      `https://www.thecocktaildb.com/api/json/v1/${API_KEY}/filter.php?i=${ingredient}`
-    );
-    const data = await response.json();
-    if (!data.drinks) {
-      alert('No cocktails found with that ingredient!');
-      return;
+    const ingredient = document.getElementById('ingredientInput').value.trim();
+    if (!ingredient) {
+        alert('Please enter an ingredient.');
+        return;
     }
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = data.drinks.map(drink => `
-      <div class="cocktail-card" data-id="${drink.idDrink}">
-        <img src="${drink.strDrinkThumb}" alt="${drink.strDrink}">
-        <h3>${drink.strDrink}</h3>
-      </div>
-    `).join('');
-  });
+
+    try {
+        const response = await fetch(
+            `https://www.thecocktaildb.com/api/json/v1/${API_KEY}/filter.php?i=${ingredient}`
+        );
+        const data = await response.json();
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        resultsDiv.innerHTML = data.drinks.map(drink => `
+            <div class="cocktail-card" data-id="${drink.idDrink}">
+                <img src="${drink.strDrinkThumb}/preview" alt="${drink.strDrink}">
+                <h3>${drink.strDrink}</h3>
+            </div>
+        `).join('');
+
+        /*
+            There is probably a better way to do this, but this will do for now.
+            Currently getting errors on non-valid ingredients for some reason    
+        */
+    } catch (error) {
+        alert('No drinks were found with that ingredient.');
+    }
+});
+
   
   document.addEventListener('click', async (e) => {
     // open details
